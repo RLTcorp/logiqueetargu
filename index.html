@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logique et Argumentation - Révisions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="glass-nav">
+        <div class="logo">Logique<span>&Arg</span></div>
+        <ul class="nav-links">
+            <li><button class="nav-btn active" data-target="accueil">Accueil</button></li>
+            <li><button class="nav-btn" data-target="modules">Modules (Théorie)</button></li>
+            <li><button class="nav-btn" data-target="global-flashcards">Flashcards (Global)</button></li>
+            <li><button class="nav-btn" data-target="global-quiz">Quiz (Global)</button></li>
+            <li><button class="nav-btn" data-target="encyclopedie">Encyclopédie</button></li>
+            <li><button class="nav-btn" data-target="atelier">Atelier</button></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <!-- Accueil -->
+        <section id="accueil" class="view active-view">
+            <h1>Canevas de l'Examen</h1>
+            <div class="card-grid">
+                <div class="card glass">
+                    <h3>1. Question Théorique (4 pts)</h3>
+                    <p>Définir un concept, donner ses caractéristiques et un exemple.</p>
+                </div>
+                <div class="card glass">
+                    <h3>2. Formulation d'un Argument (3 pts)</h3>
+                    <p>Créer un argument (inventé) selon un schéma imposé, et évaluer sa recevabilité.</p>
+                </div>
+                <div class="card glass">
+                    <h3>3. Reconnaissance d'un Schéma (3 pts)</h3>
+                    <p>Identifier le type d'un argument donné, lister les questions critiques à se poser et l'évaluer.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modules (Hub de Chapitres) -->
+        <section id="modules" class="view">
+            <div id="module-list">
+                <h1>Sélectionnez un Chapitre</h1>
+                <div class="card-grid" id="chapter-grid"></div>
+            </div>
+
+            <div id="module-menu" class="hidden-view">
+                <button class="btn-back" onclick="goBackTo('module-list')">← Retour aux chapitres</button>
+                <h1 id="menu-chapter-title">Titre du Chapitre</h1>
+                <div class="card-grid" style="margin-top: 30px;">
+                    <div class="card glass clickable-card" onclick="openExercise('theorie')">
+                        <h3>📖 Fiche Théorique & Notes</h3>
+                        <p>Les concepts fondamentaux et les astuces d'examen.</p>
+                    </div>
+                    <div class="card glass clickable-card" onclick="openExercise('flashcards')">
+                        <h3>🃏 Flashcards du Chapitre</h3>
+                        <p>Mémoire active ciblée sur ce chapitre.</p>
+                    </div>
+                    <div class="card glass clickable-card" onclick="openExercise('quiz')">
+                        <h3>🎯 Quiz du Chapitre</h3>
+                        <p>QCM ciblé sur les schémas de ce chapitre.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="module-theorie" class="hidden-view">
+                <button class="btn-back" onclick="goBackTo('module-menu')">← Retour au menu du chapitre</button>
+                <h1 id="theorie-title">Théorie & Notes</h1>
+                <div id="theorie-content" class="theory-content"></div>
+            </div>
+
+            <div id="module-flashcards" class="hidden-view">
+                <button class="btn-back" onclick="goBackTo('module-menu')">← Retour au menu du chapitre</button>
+                <div class="header-action">
+                    <h1 style="margin: 0;">Flashcards (Chapitre)</h1>
+                    <button class="btn secondary-btn" onclick="shuffleFlashcards()">🔀 Mélanger</button>
+                </div>
+                <p id="fc-empty-msg" class="hidden-view" style="text-align:center; color: var(--text-muted);">Aucune flashcard disponible pour ce chapitre.</p>
+                <div class="flashcard-container" id="fc-wrap">
+                    <div class="flashcard" id="current-flashcard">
+                        <div class="front glass"><h2 id="fc-term">Terme</h2><p class="click-hint">Cliquez pour retourner</p></div>
+                        <div class="back glass"><h3 id="fc-def">Définition</h3><p id="fc-questions" class="critical-q"></p><p id="fc-example" class="example-text"></p></div>
+                    </div>
+                </div>
+                <div class="controls" id="fc-controls">
+                    <button id="fc-prev" class="btn secondary-btn">Précédent</button>
+                    <span id="fc-counter" style="display:flex; align-items:center; color: var(--text-muted); font-weight: bold;">1/10</span>
+                    <button id="fc-next" class="btn primary-btn">Suivant</button>
+                </div>
+            </div>
+
+            <div id="module-quiz" class="hidden-view">
+                <button class="btn-back" onclick="goBackTo('module-menu')">← Retour au menu du chapitre</button>
+                <div class="header-action">
+                    <h1 style="margin: 0;">Quiz (Chapitre)</h1>
+                    <button class="btn secondary-btn" onclick="shuffleAndRestartQuiz()">🔀 Mélanger & Recommencer</button>
+                </div>
+                <p id="quiz-empty-msg" class="hidden-view" style="text-align:center; color: var(--text-muted);">Aucun quiz disponible pour ce chapitre.</p>
+                <div class="quiz-container glass" id="quiz-wrap">
+                    <div class="quiz-header"><span id="quiz-progress">Question 1</span><span id="quiz-score">Score: 0</span></div>
+                    <p id="quiz-question" class="quiz-text">Chargement...</p>
+                    <div id="quiz-options" class="options-grid"></div>
+                    <button id="quiz-next" class="btn primary-btn hidden" style="width: 100%;">Question Suivante</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flashcards Globales -->
+        <section id="global-flashcards" class="view">
+            <div class="header-action">
+                <h1>Flashcards (Tout le cours)</h1>
+                <button class="btn secondary-btn" onclick="shuffleGlobalFlashcards()">🔀 Mélanger</button>
+            </div>
+            <div class="flashcard-container" id="gfc-wrap">
+                <div class="flashcard" id="current-gfc">
+                    <div class="front glass"><h2 id="gfc-term">Terme</h2><p class="click-hint">Cliquez pour retourner</p></div>
+                    <div class="back glass"><h3 id="gfc-def">Définition</h3><p id="gfc-questions" class="critical-q"></p><p id="gfc-example" class="example-text"></p></div>
+                </div>
+            </div>
+            <div class="controls" id="gfc-controls">
+                <button id="gfc-prev" class="btn secondary-btn">Précédent</button>
+                <span id="gfc-counter" style="display:flex; align-items:center; color: var(--text-muted); font-weight: bold;">1/10</span>
+                <button id="gfc-next" class="btn primary-btn">Suivant</button>
+            </div>
+        </section>
+
+        <!-- Quiz Global -->
+        <section id="global-quiz" class="view">
+            <div class="header-action">
+                <h1>Quiz Interactif (Tout le cours)</h1>
+                <button class="btn secondary-btn" onclick="shuffleAndRestartGlobalQuiz()">🔀 Mélanger & Recommencer</button>
+            </div>
+            <div class="quiz-container glass" id="gquiz-wrap">
+                <div class="quiz-header"><span id="gquiz-progress">Question 1</span><span id="gquiz-score">Score: 0</span></div>
+                <p id="gquiz-question" class="quiz-text">Chargement...</p>
+                <div id="gquiz-options" class="options-grid"></div>
+                <button id="gquiz-next" class="btn primary-btn hidden" style="width: 100%;">Question Suivante</button>
+            </div>
+        </section>
+
+        <!-- Encyclopédie globale -->
+        <section id="encyclopedie" class="view">
+            <h1>Encyclopédie des Schémas</h1>
+            <p style="margin-bottom: 20px; color: var(--text-muted);">Tous les schémas du cours, classés par chapitre.</p>
+            <div id="schemas-list" class="accordion"></div>
+        </section>
+
+        <!-- Atelier -->
+        <section id="atelier" class="view">
+            <h1>Atelier de Création</h1>
+            <div class="atelier-container glass">
+                <p>Générez un schéma au hasard et entraînez-vous (Question 2 de l'examen).</p>
+                <div class="random-schema" id="random-schema-display">Cliquez sur "Générer"</div>
+                <button id="btn-generate-schema" class="btn primary-btn">Générer un Schéma Aléatoire</button>
+                
+                <div style="text-align: left; margin-top: 30px;">
+                    <label style="color: var(--accent); font-weight: 600;">1. Rédigez votre argument :</label>
+                    <textarea class="textarea-glass" placeholder="Votre argument original..."></textarea>
+                    
+                    <label style="color: var(--accent); font-weight: 600;">2. Expliquez sa recevabilité :</label>
+                    <textarea class="textarea-glass" style="height: 100px;" placeholder="Évaluation avec les questions critiques..."></textarea>
+                </div>
+                <button class="btn secondary-btn" style="width: 100%;" onclick="alert('Bon travail !')">Auto-évaluation terminée</button>
+            </div>
+        </section>
+
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>
